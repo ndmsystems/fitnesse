@@ -117,6 +117,10 @@ public class FitNesseContext {
     return variableSource.getProperty(name);
   }
 
+  public void setProperty(String name, String value) {
+    variableSource.setProperty(name, value);
+  }
+  
   private String unifiedPathPattern(String s)
   {
     return s.replace("/",File.separator);

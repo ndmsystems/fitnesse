@@ -116,6 +116,10 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
 
     createMainFormatter();
 
+    for(String key : request.getMap().keySet()) {
+      context.setProperty(key, request.getInput(key));
+    }
+
     if (isInteractive()) {
       makeHtml().render(response.getWriter());
     } else {

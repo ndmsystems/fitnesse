@@ -23,6 +23,10 @@ public class SystemVariableSource implements VariableSource {
     return new Maybe<>(result);
   }
 
+  public void setProperty(String name, String value) {
+    properties.setProperty(name, value);
+  }
+
   public String getProperty(String name) {
     String p = System.getenv(name);
     if (p != null) return p;
