@@ -2,6 +2,7 @@ package fitnesse.wikitext.parser;
 
 import java.util.HashMap;
 import java.util.Map;
+import fitnesse.HostnameResolver;
 
 /**
  * The page represents wiki page in the course of being parsed.
@@ -82,7 +83,6 @@ public class ParsingPage implements VariableSource {
     }
   }
 
-
   private static class NamedPageVariableSource implements VariableSource {
 
     private final SourcePage namedPage;
@@ -94,7 +94,9 @@ public class ParsingPage implements VariableSource {
     @Override
     public Maybe<String> findVariable(String key) {
       String value;
-      if (key.equals("PAGE_NAME"))
+      if (key.equals("HOSTNAME"))
+        value = HostnameResolver.getInstance().getHostname();
+      else if (key.equals("PAGE_NAME"))
         value = namedPage.getName();
       else if (key.equals("PAGE_PATH"))
         value = namedPage.getPath();
