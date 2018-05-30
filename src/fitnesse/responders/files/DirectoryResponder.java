@@ -4,6 +4,7 @@ package fitnesse.responders.files;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -113,6 +114,10 @@ class DirectoryResponder implements SecureResponder {
 
     public String getName() {
       return file.getName();
+    }
+
+    public String getUrlEncodedName() {
+      return URLEncoder.encode(file.getName());
     }
 
     public String getSize() {
