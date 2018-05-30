@@ -226,6 +226,11 @@ public class MultipleTestsRunner implements Stoppable {
   }
 
   @Override
+  public String toString() {
+      return testSystem == null ? null : testSystem.getName();
+  }
+
+  @Override
   public void stop() {
     boolean wasNotStopped = isNotStopped();
     isStopped = true;

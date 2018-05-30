@@ -60,4 +60,8 @@ public class RunningTestingTracker {
       LOG.log(Level.WARNING, "Unable to stop test system", e);
     }
   }
+
+  public String listAllProcesses() {
+    return processes.toString();
+  }
 }
