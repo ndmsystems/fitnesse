@@ -213,6 +213,8 @@ public class QueryTable extends SlimTable {
     SlimTestResult testResult;
     if (fieldName.startsWith(COMMENT_COLUMN_MARKER))
       testResult = SlimTestResult.plain();
+    else if (actualValue == null && (expectedValue == null || expectedValue.length() == 0))
+      testResult = SlimTestResult.ignore();
     else if (actualValue == null)
       testResult = SlimTestResult.fail(String.format("field %s not present", fieldName), expectedValue);
     else if (expectedValue == null || expectedValue.isEmpty())
