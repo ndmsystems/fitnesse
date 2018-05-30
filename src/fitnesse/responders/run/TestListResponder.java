@@ -14,8 +14,9 @@ import fitnesse.html.template.HtmlPage;
 public class TestListResponder implements SecureResponder {
 
   String testId = null;
-  
-  public Response makeResponse(FitNesseContext context, Request request) {
+
+  @Override
+  public Response makeResponse(FitNesseContext context, Request request) throws Exception {
     SimpleResponse response = new SimpleResponse();
     
     response.setContent(html(context));
