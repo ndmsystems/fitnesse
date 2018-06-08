@@ -1,39 +1,34 @@
-
-/* Plan:
- - Create multi-module repo:
-   - fit (deps: common)
-   - slim (deps: common, networking)
-   - common
-   - networking
-   - ant
-   - fitnesse, the wiki server
- - Move file creation to plugin
-*/
-
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.1.9'
-    }
-}
-
 plugins {
   id 'java'
   id "maven-publish"
-  id "com.jfrog.bintray" version "1.6"
 }
 
-apply plugin: "info.solidsoft.pitest"
+group = 'com.ndm'
+version = '1.0'
 
-version = new Date().format('yyyyMMdd')
+def password = ''
 
-println "Building FitNesse v${project.version}..."
+task passwordPrompt << {
+	password = System.console().readPassword("\nPassword: ")
+}
+
 
 repositories {
-  mavenCentral()
+	mavenCentral()
+	
+	maven {
+		url 's3://fitnesse-packages'
+		
+		credentials(AwsCredentials) {
+			accessKey "AKIAIDBR7SOC2C3SBMQQ"
+			secretKey "${password}"
+		}
+	}
 }
+
+
+version = '1.0'
+
 
 configurations {
   lesscss
@@ -128,7 +123,7 @@ task createUpdateLists(type: WikiFileListBuilderTask) {
 processResources.dependsOn "fitNesseVersion", "compileBootstrap", "createUpdateLists"
 
 task copyRuntimeLibs(type: Copy) {
-  into "lib"
+  into 'lib'
   from configurations.runtime
 }
 
@@ -137,12 +132,6 @@ test {
   maxParallelForks 1
 }
 
-pitest {
-  targetClasses = ['fit.*', 'fitnesse.*']
-  pitestVersion = "1.1.10"
-  threads = 1 // We can not deal with parallel execution yet
-  outputFormats = ['XML', 'HTML']
-}
 
 task run(type: JavaExec) {
   dependsOn classes, copyRuntimeLibs
@@ -150,6 +139,7 @@ task run(type: JavaExec) {
   main "fitnesseMain.FitNesseMain"
   args "-p", "8001", "-e", "0"
 }
+
 
 jar {
   dependsOn createUpdateLists
@@ -168,6 +158,7 @@ task standaloneJar(type: Jar) {
   dependsOn jar
   baseName = 'fitnesse'
   classifier = 'standalone'
+
   from {
     (configurations.compile - configurations.optional).collect { zipTree(it) }
   } {
@@ -198,131 +189,44 @@ task javadocJar(type: Jar) {
   from javadoc
 }
 
+
 task sourcesJar(type: Jar) {
   mustRunAfter check
   classifier = 'sources'
   from sourceSets.main.allSource
 }
 
-task releaseTag(type: Exec) {
-  commandLine 'git', 'tag', project.version
-  doLast {
-    println "Tagged release ${project.version}"
-  }
-}
-
-task publishTag(type: Exec) {
-  commandLine 'git', 'push', '--tags'
-  shouldRunAfter releaseTag
-}
-
-task prepareSnapshotRepo {
-    bintray.pkg.repo = 'edge'
-}
-
-task prepareReleaseRepo {
-    bintray.pkg.repo = 'release'
-}
-
-bintrayUpload.mustRunAfter prepareSnapshotRepo, prepareReleaseRepo
-
-task snapshotRelease {
-  dependsOn prepareSnapshotRepo, bintrayUpload
-}
-
-task release {
-  dependsOn releaseTag, prepareReleaseRepo, bintrayUpload, publishTag
-}
 
 clean {
   delete "lib"
 }
 
+
 publishing {
   publications {
+  tasks.passwordPrompt.execute();
     FitNesseRelease(MavenPublication) {
-      from components.java
-      artifact sourcesJar
-      artifact javadocJar
-      artifact standaloneJar
-      groupId 'org.fitnesse'
-      artifactId 'fitnesse'
+	   artifact file("$buildDir/libs/fitnesse-1.0-standalone.jar")
+	  //classifier null
       pom.withXml {
-        asNode().get('version') + {
-          resolveStrategy = Closure.DELEGATE_FIRST
-          name('FitNesse')
-          description('The fully integrated standalone wiki, and acceptance testing framework.')
-          url('http://fitnesse.org')
-          packaging('jar')
-        }
-        asNode().append(pomLicenses())
-        asNode().append(pomScm())
-        asNode().append(pomDevelopers())
-
-        // Clean up scope entries added by the pom generator:
-        asNode().dependencies.'*'.findAll() {
-          if (it.scope.text() == 'runtime') {
-            it.remove(it.scope)
-          }
-        }
+		asNode().appendNode('dependencies')
       }
     }
   }
+  
+  repositories {
+		maven {
+			url "s3://fitnesse-packages"
+
+			credentials(AwsCredentials) {
+				accessKey "AKIAIDBR7SOC2C3SBMQQ"
+				secretKey "${password}"
+			}
+		}
+	}
 }
 
-bintray {
-  user = System.getenv("BINTRAY_USER") ?: 'Define your Bintray user name in BINTRAY_USER'
-  key = System.getenv("BINTRAY_API_KEY") ?: 'Define your Bintray BINTRAY_API_KEY'
-  publications = ['FitNesseRelease']
-  publish = true
-  pkg {
-    name = 'fitnesse'
-    userOrg = 'fitnesse'
-    licenses = ['CPL-1.0']
-    websiteUrl = 'http://fitnesse.org'
-    vcsUrl = 'https://github.com/unclebob/fitnesse.git'
-    publicDownloadNumbers = true
-    githubRepo = 'unclebob/fitnesse'
-    version {
-      name = project.version
-      desc = "FitNesse release ${project.version}"
-      vcsTag = project.version
-      gpg {
-        sign = true
-      }
-    }
-  }
-}
 
 wrapper {
   gradleVersion = '4.3.1'
-}
-
-
-def pomLicenses() {
-  new NodeBuilder().licenses {
-    license {
-      name 'Common Public License version 1.0'
-      url 'http://www.opensource.org/licenses/cpl1.0'
-      distribution 'repo'
-    }
-  }
-}
-
-def pomScm() {
-  new NodeBuilder().scm {
-    connection 'scm:git:git://github.com/unclebob/fitnesse.git'
-    developerConnection 'scm:git:git@github.com:unclebob/fitnesse.git'
-    url 'scm:git:http://github.com/unclebob/fitnesse'
-  }
-}
-
-def pomDevelopers() {
-  new NodeBuilder().developers {
-    developer {
-      id 'unclebob'
-      name 'Robert C. Martin'
-      email 'unclebob@cleancoder.com'
-    }
-  }
 }
