@@ -1,16 +1,26 @@
-plugins {
-  id 'java'
-  id "maven-publish"
+import com.amazonaws.auth.*
+import com.amazonaws.auth.profile.*
+
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	
+	dependencies {
+		classpath 'com.amazonaws:aws-java-sdk-core:1.11.5'
+	}
 }
 
+
+plugins {
+	id 'java'
+	id "maven-publish"
+}
+
+sourceCompatibility = '1.7'
+targetCompatibility = '1.7'
 group = 'com.ndm'
 version = '1.0'
-
-def password = ''
-
-task passwordPrompt << {
-	password = System.console().readPassword("\nPassword: ")
-}
 
 
 repositories {
@@ -18,16 +28,13 @@ repositories {
 	
 	maven {
 		url 's3://fitnesse-packages'
-		
+
 		credentials(AwsCredentials) {
-			accessKey "AKIAIDBR7SOC2C3SBMQQ"
-			secretKey "${password}"
+			accessKey 'AKIAJHL6VDEX7MHSP3BA'
+			secretKey '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'
 		}
 	}
 }
-
-
-version = '1.0'
 
 
 configurations {
@@ -42,19 +49,15 @@ configurations {
   }
 }
 
+
 sourceSets {
   main {
     java.srcDir 'src'
     resources.srcDir 'src'
     output.resourcesDir java.outputDir
   }
-  test {
-    java.srcDir 'test'
-  }
 }
 
-sourceCompatibility = '1.7'
-targetCompatibility = '1.7'
 
 dependencies {
   compile "org.htmlparser:htmlparser:2.1"
@@ -78,11 +81,13 @@ dependencies {
   lesscss "org.mozilla:rhino:1.7.7.1"
 }
 
+
 task fitNesseVersion {
   def versionFile = new File("${sourceSets.main.output.resourcesDir}/META-INF/FitNesseVersion.txt")
   versionFile.parentFile.mkdirs()
   versionFile.text="v${version}"
 }
+
 
 task compileBootstrap(type: LessCompiler) {
   inputDir file('src/fitnesse/resources/bootstrap/less')
@@ -90,6 +95,7 @@ task compileBootstrap(type: LessCompiler) {
   cssFile file("${sourceSets.main.output.resourcesDir}/fitnesse/resources/bootstrap/css/fitnesse-bootstrap.css")
   classpath configurations.lesscss
 }
+
 
 task createUpdateLists(type: WikiFileListBuilderTask) {
   outputDirectory = "${sourceSets.main.output.resourcesDir}/Resources"
@@ -122,14 +128,10 @@ task createUpdateLists(type: WikiFileListBuilderTask) {
 
 processResources.dependsOn "fitNesseVersion", "compileBootstrap", "createUpdateLists"
 
+
 task copyRuntimeLibs(type: Copy) {
   into 'lib'
   from configurations.runtime
-}
-
-test {
-  dependsOn copyRuntimeLibs
-  maxParallelForks 1
 }
 
 
@@ -154,6 +156,7 @@ jar {
   }
 }
 
+
 task standaloneJar(type: Jar) {
   dependsOn jar
   baseName = 'fitnesse'
@@ -173,15 +176,6 @@ task standaloneJar(type: Jar) {
   }
 }
 
-task acceptanceTest(type: JavaExec) {
-  mustRunAfter test
-  onlyIf { test.didWork }
-  classpath = standaloneJar.outputs.files
-  main "fitnesseMain.FitNesseMain"
-  args "-o", "-c", "FitNesse.SuiteAcceptanceTests?suite&format=text"
-}
-
-check.dependsOn acceptanceTest
 
 task javadocJar(type: Jar) {
   mustRunAfter check
@@ -202,25 +196,33 @@ clean {
 }
 
 
-publishing {
-  publications {
-  tasks.passwordPrompt.execute();
-    FitNesseRelease(MavenPublication) {
-	   artifact file("$buildDir/libs/fitnesse-1.0-standalone.jar")
-	  //classifier null
-      pom.withXml {
-		asNode().appendNode('dependencies')
-      }
-    }
-  }
-  
-  repositories {
-		maven {
-			url "s3://fitnesse-packages"
+def fetchAwsCredentials = {
+	try {
+		return new ProfileCredentialsProvider().credentials
+	} catch (Exception e) {
+		logger.debug('Unable to retrieve AWS credentials from profile, publishing to S3 is not available.', e)
+		return null
+	}
+}
+AWSCredentials awsCredentials = fetchAwsCredentials()
 
-			credentials(AwsCredentials) {
-				accessKey "AKIAIDBR7SOC2C3SBMQQ"
-				secretKey "${password}"
+
+publishing {
+	publications {
+		FitNesseRelease(MavenPublication) {
+			artifact standaloneJar
+		}
+	}
+
+	repositories {
+		maven {
+			url 's3://fitnesse-packages'
+
+			if (awsCredentials != null) {
+				credentials(AwsCredentials) {
+					accessKey = awsCredentials.AWSAccessKeyId
+					secretKey = awsCredentials.AWSSecretKey
+				}
 			}
 		}
 	}
