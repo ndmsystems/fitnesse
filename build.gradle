@@ -27,12 +27,7 @@ repositories {
 	mavenCentral()
 	
 	maven {
-		url 's3://fitnesse-packages'
-
-		credentials(AwsCredentials) {
-			accessKey 'AKIAJHL6VDEX7MHSP3BA'
-			secretKey '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'
-		}
+		url 'http://s3.eu-central-1.amazonaws.com/fitnesse-packages'
 	}
 }
 
