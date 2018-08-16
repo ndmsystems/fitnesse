@@ -2,6 +2,7 @@ build
 out
 lib/*
 .gradle
+.nb-gradle/
 .classpath
 .project
 .settings

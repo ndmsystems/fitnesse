@@ -17,6 +17,7 @@ import fitnesse.testsystems.slim.tables.SlimAssertion;
 import fitnesse.testsystems.slim.tables.SlimTable;
 
 import static fitnesse.slim.SlimServer.*;
+import fitnesse.wiki.PageData;
 
 public abstract class SlimTestSystem implements TestSystem {
   private final SlimClient slimClient;
@@ -129,46 +130,48 @@ public abstract class SlimTestSystem implements TestSystem {
 
     evaluateTables(assertions, instructionResults);
   }
-
+  
   protected void evaluateTables(List<SlimAssertion> assertions, Map<String, Object> instructionResults) throws SlimCommunicationException {
-    for (SlimAssertion a : assertions) {
-      final String key = a.getInstruction().getId();
-      final Object returnValue = instructionResults.get(key);
-      //Exception management
-      if (returnValue != null && returnValue instanceof String && ((String) returnValue).startsWith(EXCEPTION_TAG)) {
-        SlimExceptionResult exceptionResult = new SlimExceptionResult(key, (String) returnValue);
-        if (exceptionResult.isStopTestException()) {
-          stopTestCalled = true;
-        }
-        if (exceptionResult.isStopSuiteException()) {
-          stopTestCalled = stopSuiteCalled = true;
-        }
-        exceptionResult = a.getExpectation().evaluateException(exceptionResult);
-        if (exceptionResult != null) {
-          testExceptionOccurred(a, exceptionResult);
-        }
-      } else {
-        //Normal results
-        TestResult testResult = a.getExpectation().evaluateExpectation(returnValue);
-        testAssertionVerified(a, testResult);
-
-        //Retrieve variables set during expectation step
-        if (testResult != null) {
-          Map<String, ?> variables = testResult.getVariablesToStore();
-          if (variables != null) {
-            List<Instruction> instructions = new ArrayList<>(variables.size());
-            int i = 0;
-            for (Entry<String, ?> variable : variables.entrySet()) {
-              instructions.add(new AssignInstruction("assign_" + i++, variable.getKey(), variable.getValue()));
-            }
-            //Store variables in context
-            if (i > 0) {
-              slimClient.invokeAndGetResponse(instructions);
-            }
-          }
-        }
-      }
-    }
+	  for (SlimAssertion a : assertions) {
+		  final String key = a.getInstruction().getId();
+		  final Object returnValue = instructionResults.get(key);
+		  //Exception management
+		  if (returnValue != null && returnValue instanceof String && ((String) returnValue).startsWith(EXCEPTION_TAG)) {
+			  SlimExceptionResult exceptionResult = new SlimExceptionResult(key, (String) returnValue);
+			  if (exceptionResult.isStopTestException()) {
+				  stopTestCalled = true;
+				  stopSuiteCalled = PageData.SUITE_SETUP_NAME.equals(testContext.getPageToTest().getName());
+				  System.out.println(stopSuiteCalled);
+			  }
+			  if (exceptionResult.isStopSuiteException()) {
+				  stopTestCalled = stopSuiteCalled = true;
+			  }
+			  exceptionResult = a.getExpectation().evaluateException(exceptionResult);
+			  if (exceptionResult != null) {
+				  testExceptionOccurred(a, exceptionResult);
+			  }
+		  } else {
+			  //Normal results
+			  TestResult testResult = a.getExpectation().evaluateExpectation(returnValue);
+			  testAssertionVerified(a, testResult);
+			  
+			  //Retrieve variables set during expectation step
+			  if (testResult != null) {
+				  Map<String, ?> variables = testResult.getVariablesToStore();
+				  if (variables != null) {
+					  List<Instruction> instructions = new ArrayList<>(variables.size());
+					  int i = 0;
+					  for (Entry<String, ?> variable : variables.entrySet()) {
+						  instructions.add(new AssignInstruction("assign_" + i++, variable.getKey(), variable.getValue()));
+					  }
+					  //Store variables in context
+					  if (i > 0) {
+						  slimClient.invokeAndGetResponse(instructions);
+					  }
+				  }
+			  }
+		  }
+	  }
   }
 
   protected void testOutputChunk(String output) {
