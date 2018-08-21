@@ -19,7 +19,7 @@ public class TestResponder extends SuiteResponder {
 
   @Override
   protected List<WikiPage> getPagesToRun() {
-    if (isTestPage(page)) {
+    if (isTestPage(page) && !SuiteResponder.runningTestingTracker.hasRecords()) {
       return singletonList(page);
     } else {
       return emptyList();

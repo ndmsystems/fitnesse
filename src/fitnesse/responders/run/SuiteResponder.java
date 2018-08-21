@@ -33,6 +33,7 @@ import fitnesse.reporting.history.SuiteHistoryFormatter;
 import fitnesse.reporting.history.SuiteXmlReformatter;
 import fitnesse.reporting.history.TestXmlFormatter;
 import fitnesse.responders.ChunkingResponder;
+import fitnesse.responders.ErrorResponder;
 import fitnesse.responders.WikiImporter;
 import fitnesse.responders.WikiImportingResponder;
 import fitnesse.responders.WikiImportingTraverser;
@@ -59,6 +60,7 @@ import util.FileUtil;
 
 import static fitnesse.responders.WikiImportingTraverser.ImportError;
 import static fitnesse.wiki.WikiImportProperty.isAutoUpdated;
+import static java.util.Collections.emptyList;
 
 public class SuiteResponder extends ChunkingResponder implements SecureResponder {
   private static final Logger LOG = Logger.getLogger(SuiteResponder.class.getName());
@@ -99,6 +101,9 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
   @Override
   public Response makeResponse(FitNesseContext context, Request request) throws Exception {
     Response result = super.makeResponse(context, request);
+    if (runningTestingTracker.hasRecords()) {
+	  return new ErrorResponder("Parallel execution is not allowed.", 503).makeResponse(context, request);
+    }
     if (result != response){
         return result;
     }
@@ -317,9 +322,12 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
   }
 
   protected List<WikiPage> getPagesToRun() {
-    SuiteFilter filter = createSuiteFilter(request, page.getPageCrawler().getFullPath().toString());
-    SuiteContentsFinder suiteTestFinder = new SuiteContentsFinder(page, filter, root);
-    return suiteTestFinder.getAllPagesToRunForThisSuite();
+    if (!runningTestingTracker.hasRecords()) {
+      SuiteFilter filter = createSuiteFilter(request, page.getPageCrawler().getFullPath().toString());
+      SuiteContentsFinder suiteTestFinder = new SuiteContentsFinder(page, filter, root);
+      return suiteTestFinder.getAllPagesToRunForThisSuite();
+    }
+    return emptyList();
   }
 
   protected MultipleTestsRunner newMultipleTestsRunner(List<WikiPage> pages) {

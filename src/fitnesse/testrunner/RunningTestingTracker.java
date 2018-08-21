@@ -35,6 +35,10 @@ public class RunningTestingTracker {
     processes.remove(stopId);
   }
 
+  public synchronized boolean hasRecords() {
+    return !processes.isEmpty();
+  }
+  
   public String stopAllProcesses() {
     int count = 0;
     for (Stoppable process : processes.values()) {
