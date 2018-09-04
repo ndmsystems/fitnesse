@@ -325,6 +325,10 @@ public class SuiteResponder extends ChunkingResponder implements SecureResponder
     if (!runningTestingTracker.hasRecords()) {
       SuiteFilter filter = createSuiteFilter(request, page.getPageCrawler().getFullPath().toString());
       SuiteContentsFinder suiteTestFinder = new SuiteContentsFinder(page, filter, root);
+      String tags = page.getData().getAttribute(PageData.PropertySUITES);
+      if (tags != null) {
+        System.setProperty("ftags", tags);
+      }
       return suiteTestFinder.getAllPagesToRunForThisSuite();
     }
     return emptyList();
