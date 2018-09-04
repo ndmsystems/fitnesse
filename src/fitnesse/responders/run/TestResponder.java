@@ -9,7 +9,6 @@ import fitnesse.reporting.BaseFormatter;
 import fitnesse.reporting.history.TestXmlFormatter;
 import fitnesse.testrunner.MultipleTestsRunner;
 import fitnesse.testsystems.TestSummary;
-import fitnesse.wiki.PageData;
 import fitnesse.wiki.WikiPage;
 
 import static fitnesse.wiki.WikiPageUtil.isTestPage;
@@ -20,11 +19,7 @@ public class TestResponder extends SuiteResponder {
 
   @Override
   protected List<WikiPage> getPagesToRun() {
-    if (isTestPage(page) && !SuiteResponder.runningTestingTracker.hasRecords()) {	
-      String tags = page.getData().getAttribute(PageData.PropertySUITES);
-      if (tags != null) {
-        System.setProperty("ftags", tags);
-      }
+    if (isTestPage(page) && !SuiteResponder.runningTestingTracker.hasRecords()) {
       return singletonList(page);
     } else {
       return emptyList();
