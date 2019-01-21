@@ -161,7 +161,7 @@ task standaloneJar(type: Jar) {
 	from {
 		(configurations.compile - configurations.optional).collect { zipTree(it) }
 	} {
-		exclude 'META-INF/**'
+		include 'META-INF/FitNesseVersion.txt'
 	}
 	from jar.outputs.files.collect {
 		zipTree(it)
