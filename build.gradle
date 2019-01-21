@@ -173,8 +173,6 @@ task standaloneJar(type: Jar) {
 
 	from {
 		(configurations.compile - configurations.optional).collect { zipTree(it) }
-	} {
-		include 'META-INF/FitNesseVersion.txt'
 	}
 	from jar.outputs.files.collect {
 		zipTree(it)
