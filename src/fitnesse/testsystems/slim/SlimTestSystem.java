@@ -141,7 +141,6 @@ public abstract class SlimTestSystem implements TestSystem {
 			  if (exceptionResult.isStopTestException()) {
 				  stopTestCalled = true;
 				  stopSuiteCalled = PageData.SUITE_SETUP_NAME.equals(testContext.getPageToTest().getName());
-				  System.out.println(stopSuiteCalled);
 			  }
 			  if (exceptionResult.isStopSuiteException()) {
 				  stopTestCalled = stopSuiteCalled = true;
