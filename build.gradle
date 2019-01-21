@@ -20,9 +20,22 @@ plugins {
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
 group = 'com.ndm'
-version = new Date().format('yyyyMMdd')
 
-println "Building FitNesse v${project.version}..."
+
+task incrementVersion {
+	doFirst {
+		def pFile = file('gradle.properties')
+		def Properties vProps = new Properties()
+
+		vProps.load(new FileInputStream(pFile))
+		def mv = vProps['minorVersion'].toInteger() + 1
+		vProps['minorVersion'] = mv.toString()
+		vProps.store(pFile.newWriter(), null)
+	}
+  
+	version = "$majorVersion.$minorVersion"
+}
+
 
 repositories {
 	mavenCentral()
@@ -223,6 +236,8 @@ publishing {
 		}
 	}
 }
+
+publish.dependsOn incrementVersion
 
 // We cant' define wrapper version for subprojects
 if (rootProject == 'fitnesse') {
