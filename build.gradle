@@ -117,8 +117,7 @@ task createUpdateLists(type: WikiFileListBuilderTask) {
 	doNotReplaceFiles = [
     "FitNesseRoot/content.txt",
     "FitNesseRoot/properties.xml",
-    "FitNesseRoot/FrontPage/content.txt",
-    "FitNesseRoot/FrontPage/properties.xml",
+    "FitNesseRoot/FrontPage.wiki",
     "FitNesseRoot/PageHeader/content.txt",
     "FitNesseRoot/PageHeader/properties.xml",
     "FitNesseRoot/PlugIns/content.txt",
