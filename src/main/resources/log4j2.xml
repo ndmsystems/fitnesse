@@ -6,7 +6,7 @@
             <JsonLayout complete="false" compact="true" eventEol="true"/>
         </Socket>
         <Console name="console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} %highlight{${LOG_LEVEL_PATTERN:-%6p}} [%12.12t] %style{%-25.25C{1.}}{cyan} : %m%n%throwable"/>
+            <PatternLayout pattern="** %d{HH:mm:ss,SSS} %m%n"/>
         </Console>
 	</Appenders>
 	<Loggers>
