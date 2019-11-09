@@ -69,12 +69,14 @@ sourceSets {
 
 
 dependencies {
-  implementation(
+  compile(
   // Logging
-  ['org.apache.logging.log4j:log4j-slf4j-impl:2.12.1'],
   ['org.apache.logging.log4j:log4j-core:2.12.1'],
   ['org.apache.logging.log4j:log4j-api:2.12.1'],
-  ['org.apache.logging.log4j:log4j-jul:2.12.1']
+  ['org.apache.logging.log4j:log4j-jul:2.12.1'],
+  ['com.fasterxml.jackson.core:jackson-databind:2.10.0'],
+          ['com.fasterxml.jackson.core:jackson-core:2.10.0'],
+          ['com.fasterxml.jackson.core:jackson-annotations:2.10.0']
   )
 	compile "org.htmlparser:htmlparser:2.1"
 	compile "org.htmlparser:htmllexer:2.1"
@@ -155,6 +157,7 @@ task run(type: JavaExec) {
 	classpath = sourceSets.main.runtimeClasspath
 	main "fitnesseMain.FitNesseMain"
 	args "-p", "8001", "-e", "0"
+  jvmArgs "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"
 }
 
 
