@@ -1,20 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="INFO">
 	<Appenders>
-        <Socket name="socket" host="172.16.99.5" port="10515" immediateFail="true" connectTimeoutMillis="1000" reconnectionDelayMillis="0">
-            <!-- Generate one record per line, including locationInfo such as class, method, file, and line -->
-            <JsonLayout complete="false" compact="true" eventEol="true" locationInfo="true">
-                <KeyValuePair key="host" value="fitnesse"/>
-            </JsonLayout>
-        </Socket>
         <Console name="console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} %highlight{${LOG_LEVEL_PATTERN:-%6p}} [%12.12t] %style{%-25.25C{1.}}{cyan} : %m%n%throwable"/>
         </Console>
 	</Appenders>
 	<Loggers>
-		<Root level="INFO">
+		<Root level="ALL">
 			<AppenderRef ref="console"/>
-            <AppenderRef ref="socket"/>
 		</Root>
 	</Loggers>
 </Configuration>
