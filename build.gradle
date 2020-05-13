@@ -21,7 +21,19 @@ plugins {
 
 apply plugin: "info.solidsoft.pitest"
 
-version = new Date().format('yyyyMMdd')
+task incrementVersion {
+	doFirst {	
+		def pFile = file('gradle.properties')	
+		def Properties vProps = new Properties()	
+
+		vProps.load(new FileInputStream(pFile))	
+		def mv = vProps['minorVersion'].toInteger() + 1	
+		vProps['minorVersion'] = mv.toString()	
+		vProps.store(pFile.newWriter(), null)	
+	}	
+
+	version = "$majorVersion.$minorVersion"	
+}
 
 println "Building FitNesse v${project.version}..."
 
@@ -238,7 +250,7 @@ publishing {
     publications {
         FitNesseRelease(MavenPublication) {
             artifact standaloneJar
-            groupId 'org.fitnesse'
+            groupId 'org.ndm'
             artifactId 'fitnesse'
         }
     }
@@ -256,6 +268,8 @@ publishing {
         }
     }
 }
+
+publish.dependsOn incrementVersion
 
 wrapper {
   gradleVersion = '5.3.1'
