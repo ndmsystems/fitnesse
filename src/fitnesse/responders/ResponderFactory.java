@@ -2,21 +2,6 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.responders;
 
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import fitnesse.responders.run.SuiteResponder;
-import fitnesse.responders.run.TestResponder;
-import fitnesse.responders.testHistory.ExecutionLogResponder;
-import fitnesse.wiki.PathParser;
-import org.apache.commons.lang.StringUtils;
 import fitnesse.Responder;
 import fitnesse.http.Request;
 import fitnesse.responders.editing.AddChildPageResponder;
@@ -33,10 +18,20 @@ import fitnesse.responders.files.FileResponder;
 import fitnesse.responders.files.RenameFileConfirmationResponder;
 import fitnesse.responders.files.RenameFileResponder;
 import fitnesse.responders.files.UploadResponder;
-import fitnesse.responders.refactoring.*;
+import fitnesse.responders.refactoring.DeletePageResponder;
+import fitnesse.responders.refactoring.MovePageResponder;
+import fitnesse.responders.refactoring.RefactorPageResponder;
+import fitnesse.responders.refactoring.RenamePageResponder;
+import fitnesse.responders.refactoring.SearchReplaceResponder;
+import fitnesse.responders.run.PartitionPreviewResponder;
 import fitnesse.responders.run.StopTestResponder;
 import fitnesse.responders.run.TestListResponder;
-import fitnesse.responders.search.*;
+import fitnesse.responders.run.SuiteResponder;
+import fitnesse.responders.run.TestResponder;
+import fitnesse.responders.search.SearchPropertiesResponder;
+import fitnesse.responders.search.SearchResponder;
+import fitnesse.responders.search.WhereUsedResponder;
+import fitnesse.responders.testHistory.ExecutionLogResponder;
 import fitnesse.responders.testHistory.HistoryComparerResponder;
 import fitnesse.responders.testHistory.PageHistoryResponder;
 import fitnesse.responders.testHistory.PurgeHistoryResponder;
@@ -46,6 +41,18 @@ import fitnesse.responders.versions.RollbackResponder;
 import fitnesse.responders.versions.VersionComparerResponder;
 import fitnesse.responders.versions.VersionResponder;
 import fitnesse.responders.versions.VersionSelectionResponder;
+import fitnesse.wiki.PathParser;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ResponderFactory {
   private static final Logger LOG = Logger.getLogger(ResponderFactory.class.getName());
@@ -66,6 +73,7 @@ public class ResponderFactory {
     addResponder("test", TestResponder.class);
     addResponder("suite", SuiteResponder.class);
     addResponder("testList", TestListResponder.class);
+    addResponder("partition", PartitionPreviewResponder.class);
     addResponder("proxy", SerializedPageResponder.class);
     addResponder("versions", VersionSelectionResponder.class);
     addResponder("viewVersion", VersionResponder.class);
