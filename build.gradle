@@ -238,6 +238,8 @@ publishing {
     publications {
         FitNesseRelease(MavenPublication) {
             artifact standaloneJar
+            groupId 'org.fitnesse'
+            artifactId 'fitnesse'
         }
     }
 
