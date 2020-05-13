@@ -19,17 +19,17 @@ public class TestListResponder implements SecureResponder {
   public Response makeResponse(FitNesseContext context, Request request) throws Exception {
     SimpleResponse response = new SimpleResponse();
     
-    response.setContent(html(context));
+    response.setContent(html(context, request));
 
     return response;
   }
 
-  private String html(FitNesseContext context) {
+  private String html(FitNesseContext context, Request request) {
     HtmlPage page = context.pageFactory.newPage();
     page.addTitles("Currently running tests");
     page.put("runningTestingTracker", SuiteResponder.runningTestingTracker);
     page.setMainTemplate("testListPage.vm");
-    return page.html();
+    return page.html(request);
   }
 
   public SecureOperation getSecureOperation() {

@@ -2,6 +2,17 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.testsystems.slim.tables;
 
+import fitnesse.slim.instructions.Instruction;
+import fitnesse.testsystems.ExecutionResult;
+import fitnesse.testsystems.TestExecutionException;
+import fitnesse.testsystems.TestPage;
+import fitnesse.testsystems.TestResult;
+import fitnesse.testsystems.TestSummary;
+import fitnesse.testsystems.slim.SlimTestContext;
+import fitnesse.testsystems.slim.Table;
+import fitnesse.testsystems.slim.results.SlimTestResult;
+import fitnesse.util.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,17 +23,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import fitnesse.slim.instructions.Instruction;
-import fitnesse.testsystems.ExecutionResult;
-import fitnesse.testsystems.TestExecutionException;
-import fitnesse.testsystems.TestPage;
-import fitnesse.testsystems.TestResult;
-import fitnesse.testsystems.TestSummary;
-import fitnesse.testsystems.slim.SlimTestContext;
-import fitnesse.testsystems.slim.Table;
-import fitnesse.testsystems.slim.results.SlimTestResult;
-import org.apache.commons.lang.StringUtils;
 
 
 /**
@@ -243,7 +243,7 @@ public class ScenarioTable extends SlimTable {
       parameterizedName = nameBuffer.toString().trim();
     }
     if (parameterizedName != null) {
-      String patternString = parameterizedName.replaceAll("_", "(.*)");
+      String patternString = StringUtils.replace(parameterizedName, "_", "(.*)");
       pattern = Pattern.compile(patternString);
     }
   }
@@ -329,6 +329,11 @@ public class ScenarioTable extends SlimTable {
     @Override
     public String getSymbol(String symbolName) {
       return testContext.getSymbol(symbolName);
+    }
+
+    @Override
+    public Map<String, String> getSymbols() {
+      return testContext.getSymbols();
     }
 
     @Override

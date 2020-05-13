@@ -2,10 +2,6 @@
 // Released under the terms of the CPL Common Public License version 1.0.
 package fitnesse.testsystems.slim.tables;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import fitnesse.slim.converters.BooleanConverter;
 import fitnesse.slim.converters.VoidConverter;
 import fitnesse.slim.instructions.Instruction;
@@ -16,12 +12,16 @@ import fitnesse.testsystems.slim.Table;
 import fitnesse.testsystems.slim.results.SlimTestResult;
 import fitnesse.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class ScriptTable extends SlimTable {
-  private static final String SEQUENTIAL_ARGUMENT_PROCESSING_SUFFIX = ";";
 
   public ScriptTable(Table table, String tableId, SlimTestContext context) {
     super(table, tableId, context);
   }
+
   /**
    * Template method to provide the keyword that identifies the table type.
    *
@@ -156,14 +156,14 @@ public class ScriptTable extends SlimTable {
     return assertions;
   }
 
-  protected List<SlimAssertion> actionAndAssign(String symbolName, int row) {
+  protected List<SlimAssertion> actionAndAssign(String symbolName, int row) throws SyntaxError {
     List<SlimAssertion> assertions = new ArrayList<>();
     int lastCol = table.getColumnCountInRow(row) - 1;
     String actionName = getActionNameStartingAt(1, lastCol, row);
     if (!actionName.equals("")) {
       String[] args = getArgumentsStartingAt(1 + 1, lastCol, row, assertions);
       assertions.add(makeAssertion(callAndAssign(symbolName, getTableType() + "Actor", actionName, (Object[]) args),
-              new SymbolAssignmentExpectation(symbolName, 0, row)));
+        new SymbolAssignmentExpectation(symbolName, 0, row)));
 
     }
     return assertions;
@@ -201,68 +201,58 @@ public class ScriptTable extends SlimTable {
     return assertions;
   }
 
-  protected String getScenarioNameFromAlternatingCells(int endingCol, int row) {
-    String actionName = getActionNameStartingAt(0, endingCol, row);
-    String simpleName = actionName.replace(SEQUENTIAL_ARGUMENT_PROCESSING_SUFFIX, "");
-    return Disgracer.disgraceClassName(simpleName);
+  protected String getScenarioNameFromAlternatingCells(int endingCol, int row) throws SyntaxError {
+    return RowHelper.getScenarioNameFromAlternatingCells(table, endingCol, row);
   }
 
   protected List<SlimAssertion> note(int row) {
     return Collections.emptyList();
   }
 
-  protected List<SlimAssertion> show(int row) {
+  protected List<SlimAssertion> show(int row) throws SyntaxError {
     int lastCol = table.getColumnCountInRow(row) - 1;
     return invokeAction(1, lastCol, row,
-            new ShowActionExpectation(0, row));
+      new ShowActionExpectation(0, row));
   }
 
-  protected List<SlimAssertion> ensure(int row) {
+  protected List<SlimAssertion> ensure(int row) throws SyntaxError {
     int lastCol = table.getColumnCountInRow(row) - 1;
     return invokeAction(1, lastCol, row,
-            new EnsureActionExpectation(0, row));
+      new EnsureActionExpectation(0, row));
   }
 
-  protected List<SlimAssertion> reject(int row) {
+  protected List<SlimAssertion> reject(int row) throws SyntaxError {
     int lastCol = table.getColumnCountInRow(row) - 1;
     return invokeAction(1, lastCol, row,
-            new RejectActionExpectation(0, row));
+      new RejectActionExpectation(0, row));
 
   }
 
-  protected List<SlimAssertion> checkAction(int row) {
+  protected List<SlimAssertion> checkAction(int row) throws SyntaxError {
     int lastColInAction = table.getColumnCountInRow(row) - 1;
     table.getCellContents(lastColInAction, row);
     return invokeAction(1, lastColInAction - 1, row,
-            new ReturnedValueExpectation(lastColInAction, row));
+      new ReturnedValueExpectation(lastColInAction, row));
   }
 
-  protected List<SlimAssertion> checkNotAction(int row) {
+  protected List<SlimAssertion> checkNotAction(int row) throws SyntaxError {
     int lastColInAction = table.getColumnCountInRow(row) - 1;
     table.getCellContents(lastColInAction, row);
     return invokeAction(1, lastColInAction - 1, row,
-            new RejectedValueExpectation(lastColInAction, row));
+      new RejectedValueExpectation(lastColInAction, row));
   }
 
-  protected List<SlimAssertion> invokeAction(int startingCol, int endingCol, int row, SlimExpectation expectation) {
+  protected List<SlimAssertion> invokeAction(int startingCol, int endingCol, int row, SlimExpectation expectation) throws SyntaxError {
     String actionName = getActionNameStartingAt(startingCol, endingCol, row);
     List<SlimAssertion> assertions = new ArrayList<>();
     String[] args = getArgumentsStartingAt(startingCol + 1, endingCol, row, assertions);
     assertions.add(makeAssertion(callFunction(getTableType() + "Actor", actionName, (Object[]) args),
-            expectation));
+      expectation));
     return assertions;
   }
 
-  protected String getActionNameStartingAt(int startingCol, int endingCol, int row) {
-    StringBuilder actionName = new StringBuilder();
-    actionName.append(table.getCellContents(startingCol, row));
-    int actionNameCol = startingCol + 2;
-    while (actionNameCol <= endingCol &&
-    !invokesSequentialArgumentProcessing(actionName.toString())) {
-      actionName.append(" ").append(table.getCellContents(actionNameCol, row));
-      actionNameCol += 2;
-    }
-    return actionName.toString().trim();
+  protected String getActionNameStartingAt(int startingCol, int endingCol, int row) throws SyntaxError {
+    return RowHelper.getActionNameStartingAt(table, startingCol, endingCol, row);
   }
 
   // Adds extra assertions to the "assertions" list!
@@ -270,14 +260,14 @@ public class ScriptTable extends SlimTable {
     ArgumentExtractor extractor = new ArgumentExtractor(startingCol, endingCol, row);
     while (extractor.hasMoreToExtract()) {
       assertions.add(makeAssertion(Instruction.NOOP_INSTRUCTION,
-              new ArgumentExpectation(extractor.argumentColumn, row)));
+        new ArgumentExpectation(extractor.argumentColumn, row)));
       extractor.extractNextArgument();
     }
     return extractor.getArguments();
   }
 
   protected boolean invokesSequentialArgumentProcessing(String cellContents) {
-    return cellContents.endsWith(SEQUENTIAL_ARGUMENT_PROCESSING_SUFFIX);
+    return RowHelper.invokesSequentialArgumentProcessing(cellContents);
   }
 
   protected List<SlimAssertion> startActor() {
@@ -303,6 +293,36 @@ public class ScriptTable extends SlimTable {
     assertions.add(constructInstance(actorName, className, classNameColumn, row));
     getArgumentsStartingAt(classNameColumn + 1, table.getColumnCountInRow(row) - 1, row, assertions);
     return assertions;
+  }
+
+  public static class RowHelper {
+    private static final String SEQUENTIAL_ARGUMENT_PROCESSING_SUFFIX = ";";
+
+    public static String getScenarioNameFromAlternatingCells(Table table, int endingCol, int row) throws SyntaxError {
+      String actionName = getActionNameStartingAt(table, 0, endingCol, row);
+      String simpleName = StringUtils.replace(actionName, SEQUENTIAL_ARGUMENT_PROCESSING_SUFFIX, "");
+      return Disgracer.disgraceClassName(simpleName);
+    }
+
+    public static String getActionNameStartingAt(Table table, int startingCol, int endingCol, int row) throws SyntaxError {
+      StringBuilder actionName = new StringBuilder();
+      try {
+        actionName.append(table.getCellContents(startingCol, row));
+      } catch (IndexOutOfBoundsException e) {
+        throw new SyntaxError("Too few columns in row " + (row + 1) + ". Expected a function in column " + (startingCol + 1) + ".");
+      }
+      int actionNameCol = startingCol + 2;
+      while (actionNameCol <= endingCol &&
+        !invokesSequentialArgumentProcessing(actionName.toString())) {
+        actionName.append(" ").append(table.getCellContents(actionNameCol, row));
+        actionNameCol += 2;
+      }
+      return actionName.toString().trim();
+    }
+
+    public static boolean invokesSequentialArgumentProcessing(String cellContents) {
+      return cellContents.endsWith(SEQUENTIAL_ARGUMENT_PROCESSING_SUFFIX);
+    }
   }
 
   class ArgumentExtractor {
@@ -366,7 +386,7 @@ public class ScriptTable extends SlimTable {
     @Override
     protected SlimTestResult createEvaluationMessage(String actual, String expected) {
       return (actual != null && actual.equals(BooleanConverter.TRUE)) ?
-              SlimTestResult.pass() : SlimTestResult.fail();
+        SlimTestResult.pass() : SlimTestResult.fail();
     }
   }
 
