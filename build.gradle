@@ -250,7 +250,7 @@ publishing {
     publications {
         FitNesseRelease(MavenPublication) {
             artifact standaloneJar
-            groupId 'org.ndm'
+            groupId 'com.ndm'
             artifactId 'fitnesse'
         }
     }
