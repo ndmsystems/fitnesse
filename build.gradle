@@ -22,24 +22,24 @@ plugins {
 apply plugin: "info.solidsoft.pitest"
 
 task incrementVersion {
-	doFirst {	
-		def pFile = file('gradle.properties')	
-		def Properties vProps = new Properties()	
+	doFirst {
+		def pFile = file('gradle.properties')
+		def Properties vProps = new Properties()
 
-		vProps.load(new FileInputStream(pFile))	
-		def mv = vProps['minorVersion'].toInteger() + 1	
-		vProps['minorVersion'] = mv.toString()	
-		vProps.store(pFile.newWriter(), null)	
-	}	
+		vProps.load(new FileInputStream(pFile))
+		def mv = vProps['minorVersion'].toInteger() + 1
+		vProps['minorVersion'] = mv.toString()
+		vProps.store(pFile.newWriter(), null)
+	}
 
-	version = "$majorVersion.$minorVersion"	
+	version = "$majorVersion.$minorVersion"
 }
 
 println "Building FitNesse v${project.version}..."
 
 repositories {
   mavenCentral()
-    
+
     maven {
         url 'http://s3.eu-central-1.amazonaws.com/fitnesse-packages'
     }
@@ -191,6 +191,9 @@ task standaloneJar(type: Jar) {
     attributes("Main-Class": "fitnesseMain.FitNesseMain",
         "Implementation-Version": version)
   }
+
+  archiveVersion = null
+  destinationDir = file("${rootProject.fitDir}")
 }
 
 task slimJar(type: Jar) {
@@ -271,7 +274,9 @@ publishing {
 
 publish.dependsOn incrementVersion
 
-wrapper {
-  gradleVersion = '5.3.1'
+// We cant' define wrapper version for subprojects
+if (rootProject == 'fitnesse') {
+  wrapper {
+    gradleVersion = '5.3.1'
+  }
 }
-
