@@ -15,9 +15,7 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static java.lang.String.format;
 
@@ -143,12 +141,17 @@ public abstract class ExecutionReport {
       String stdErr = XmlUtil.getTextValue(log, "stdErr");
 
       ExecutionLogReport report = new ExecutionLogReport(commandLine, testSystemName);
+
+      String[] lines = stdOut.split("\\r?\\n");
+      for (String line : lines) {
+        report.setStdOutList(line);
+        report.setStdOutColor(getLineColor(line));
+      }
+
       if (StringUtils.isNotBlank(exitCode)) {
         report.exitCode(Integer.parseInt(exitCode));
       }
-      if (stdOut != null) {
-        report.setStdOut(stdOut);
-      }
+
       if (stdErr != null) {
         report.setStdErr(stdErr);
       }
@@ -161,6 +164,19 @@ public abstract class ExecutionReport {
       }
       executionLogs.add(report);
     }
+  }
+
+  private String getLineColor(String line) {
+    String ret = "#333"; // dark-grey
+
+    /*if (line.startsWith("::"))
+      ret = "chocolate";
+    else if (line.startsWith("**") && line.contains("{") || (line.contains("}") || line.startsWith("  ")))
+      ret = "blueviolet";
+    else if (line.startsWith("CREATE") || line.startsWith("REUSE") || line.startsWith("| script |"))
+      ret = "darkcyan";*/
+
+    return ret;
   }
 
   protected abstract void unpackResults(Element testResults) throws InvalidReportException;
@@ -237,6 +253,26 @@ public abstract class ExecutionReport {
     private final String testSystemName;
     private StringBuffer stdOut = new StringBuffer();
     private StringBuffer stdErr = new StringBuffer();
+
+    public List<String> getStdOutList() {
+      return stdOutList;
+    }
+
+    public void setStdOutList(String line) {
+      this.stdOutList.add(line);
+    }
+
+    public List<String> getStdOutColor() {
+      return stdOutColor;
+    }
+
+    public void setStdOutColor(String color) {
+      this.stdOutColor.add(color);
+    }
+
+    private List<String> stdOutList = new ArrayList<>();
+    private List<String> stdOutColor = new ArrayList<>();
+
     private int exitCode;
     private List<Throwable> exceptions = new ArrayList<>();
 
