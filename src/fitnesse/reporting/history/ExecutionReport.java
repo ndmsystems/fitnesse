@@ -145,7 +145,6 @@ public abstract class ExecutionReport {
       String[] lines = stdOut.split("\\r?\\n");
       for (String line : lines) {
         report.setStdOutList(line);
-        report.setStdOutColor(getLineColor(line));
       }
 
       if (StringUtils.isNotBlank(exitCode)) {
@@ -166,18 +165,7 @@ public abstract class ExecutionReport {
     }
   }
 
-  private String getLineColor(String line) {
-    String ret = "#333"; // dark-grey
 
-    /*if (line.startsWith("::"))
-      ret = "chocolate";
-    else if (line.startsWith("**") && line.contains("{") || (line.contains("}") || line.startsWith("  ")))
-      ret = "blueviolet";
-    else if (line.startsWith("CREATE") || line.startsWith("REUSE") || line.startsWith("| script |"))
-      ret = "darkcyan";*/
-
-    return ret;
-  }
 
   protected abstract void unpackResults(Element testResults) throws InvalidReportException;
 
@@ -253,26 +241,7 @@ public abstract class ExecutionReport {
     private final String testSystemName;
     private StringBuffer stdOut = new StringBuffer();
     private StringBuffer stdErr = new StringBuffer();
-
-    public List<String> getStdOutList() {
-      return stdOutList;
-    }
-
-    public void setStdOutList(String line) {
-      this.stdOutList.add(line);
-    }
-
-    public List<String> getStdOutColor() {
-      return stdOutColor;
-    }
-
-    public void setStdOutColor(String color) {
-      this.stdOutColor.add(color);
-    }
-
     private List<String> stdOutList = new ArrayList<>();
-    private List<String> stdOutColor = new ArrayList<>();
-
     private int exitCode;
     private List<Throwable> exceptions = new ArrayList<>();
 
@@ -299,6 +268,27 @@ public abstract class ExecutionReport {
 
     public String getStdOut() {
       return stdOut.toString();
+    }
+
+    public List<String> getStdOutList() {
+      return stdOutList;
+    }
+
+    public void setStdOutList(String line) {
+      this.stdOutList.add(line);
+    }
+
+    public String getLineColor(String line) {
+      String ret = "#333"; // dark-grey
+
+    /*if (line.startsWith("::"))
+      ret = "chocolate";
+    else if (line.startsWith("**") && line.contains("{") || (line.contains("}") || line.startsWith("  ")))
+      ret = "blueviolet";
+    else if (line.startsWith("CREATE") || line.startsWith("REUSE") || line.startsWith("| script |"))
+      ret = "darkcyan";*/
+
+      return ret;
     }
 
     public void addStdErr(String output) {
