@@ -278,8 +278,20 @@ public abstract class ExecutionReport {
       this.stdOutList.add(line);
     }
 
-    public String getLineColor(String line) {
-      String ret = "#333"; // dark-grey
+    public String getLineStyle(String line) {
+      String color = "#333";                // default foreground color
+      String bgColor = "#f5f5f5";           // default background color
+
+      if (line.contains(": [I] "))          // Console Info
+        color = "gray";
+      else if (line.contains(": [W] "))     // Console Warning
+        color = "orange";
+      else if (line.contains(": [E] "))     // Console Error
+        color = "red";
+      else if (line.contains(": [C] ")) {   // Console Critical
+        color = "white";
+        bgColor = "red";
+      }
 
     /*if (line.startsWith("::"))
       ret = "chocolate";
@@ -288,7 +300,7 @@ public abstract class ExecutionReport {
     else if (line.startsWith("CREATE") || line.startsWith("REUSE") || line.startsWith("| script |"))
       ret = "darkcyan";*/
 
-      return ret;
+      return format("color: %s; background-color: %s;", color, bgColor);
     }
 
     public void addStdErr(String output) {

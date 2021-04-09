@@ -33,7 +33,7 @@
 <h4>Standard Output:</h4>
 <pre>
  #foreach( $line in $log.stdOutList )
-<span style="color: $log.getLineColor($line);">#escape($line)</span>
+<span style="$log.getLineStyle($line)">#escape($line)</span>
  #end
 </pre>
  #set( $stdErr = $log.stdErr)
