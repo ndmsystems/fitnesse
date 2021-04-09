@@ -292,13 +292,9 @@ public abstract class ExecutionReport {
         color = "white";
         bgColor = "red";
       }
-
-    /*if (line.startsWith("::"))
-      ret = "chocolate";
-    else if (line.startsWith("**") && line.contains("{") || (line.contains("}") || line.startsWith("  ")))
-      ret = "blueviolet";
-    else if (line.startsWith("CREATE") || line.startsWith("REUSE") || line.startsWith("| script |"))
-      ret = "darkcyan";*/
+      else if (line.startsWith("  ")) {     // Response from SUT
+        color = "darkcyan";
+      }
 
       return format("color: %s; background-color: %s;", color, bgColor);
     }
