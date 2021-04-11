@@ -282,9 +282,10 @@ public abstract class ExecutionReport {
       String color = "#333";                                              // Default foreground color
       String bgColor = "#f5f5f5";                                         // Default background color
 
-      if (line.startsWith("REUSE") || line.startsWith("CREATE"))          // Test-runner Tool creation
+      if (line.startsWith("| script |") ||                                // Test-runner Tool creation
+        line.startsWith("REUSE") || line.startsWith("CREATE")) {
         color = "darkblue";
-      else if (line.startsWith("# "))                                     // Author's Comment
+      } else if (line.startsWith("# "))                                   // Author's Comment
         color = "blue";
       if (line.contains(": [W] "))                                        // Console Warning
         color = "orange";
@@ -293,8 +294,7 @@ public abstract class ExecutionReport {
       else if (line.contains(": [C] ")) {                                 // Console Critical
         color = "white";
         bgColor = "red";
-      }
-      else if (line.startsWith(":: ") || line.contains(": [I] "))         // Console Info
+      } else if (line.startsWith(":: ") || line.contains(": [I] "))         // Console Info
         color = "gray";
       else if (line.startsWith("  ")) {                                   // Response from DUT
         color = "darkcyan";
