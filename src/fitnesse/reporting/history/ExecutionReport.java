@@ -282,6 +282,10 @@ public abstract class ExecutionReport {
       String color = "#333";                                              // Default foreground color
       String bgColor = "#f5f5f5";                                         // Default background color
 
+      if (line.startsWith("REUSE") || line.startsWith("CREATE"))          // Test-runner Tool creation
+        color = "darkblue";
+      else if (line.startsWith("# "))                                     // Author's Comment
+        color = "blue";
       if (line.contains(": [W] "))                                        // Console Warning
         color = "orange";
       else if (line.contains(": [E] ") || line.contains("Bad data CRC"))  // Console Error
