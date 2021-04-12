@@ -284,12 +284,12 @@ public abstract class ExecutionReport {
 
       if (line.startsWith("| script |") ||                                // Test-runner Tool creation
         line.startsWith("REUSE") || line.startsWith("CREATE")) {
-        color = "darkblue";
-      } else if (line.startsWith("# "))                                   // Author's Comment
         color = "blue";
+      } else if (line.startsWith("# "))                                   // Author's Comment
+        color = "dodgerblue";
       if (line.contains(": [W] "))                                        // Console Warning
         color = "orange";
-      else if (line.contains(": [E] ") || line.contains("Bad data CRC"))  // Console Error
+      else if (line.contains(": [E] ") || line.contains("Bad Data CRC"))  // Console Error
         color = "red";
       else if (line.contains(": [C] ")) {                                 // Console Critical
         color = "white";
