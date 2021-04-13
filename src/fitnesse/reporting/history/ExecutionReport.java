@@ -291,10 +291,10 @@ public abstract class ExecutionReport {
         color = "orange";
       else if (line.contains(": [E] ") || line.contains("Bad Data CRC"))  // Console Error
         color = "red";
-      else if (line.contains(": [C] ")) {                                 // Console Critical
+      else if (line.contains(": [C] ") || line.contains("Call Trace:")) { // Console Critical
         color = "white";
         bgColor = "red";
-      } else if (line.startsWith(":: ") || line.contains(": [I] "))         // Console Info
+      } else if (line.startsWith(":: ") || line.contains(": [I] "))       // Console Info
         color = "gray";
       else if (line.startsWith("  ")) {                                   // Response from DUT
         color = "darkcyan";
