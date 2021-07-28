@@ -287,7 +287,9 @@ public abstract class ExecutionReport {
         color = "blue";
       } else if (line.startsWith("# "))                                   // Author's Comment
         color = "dodgerblue";
-      if (line.contains(": [W] "))                                        // Console Warning
+      else if (line.startsWith("sl"))                                     // Syslog server
+        color = "green";
+      else if (line.contains(": [W] "))                                   // Console Warning
         color = "orange";
       else if (line.contains(": [E] ") || line.contains("Bad Data CRC"))  // Console Error
         color = "red";
