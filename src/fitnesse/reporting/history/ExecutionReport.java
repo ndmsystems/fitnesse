@@ -287,7 +287,7 @@ public abstract class ExecutionReport {
         color = "blue";
       } else if (line.startsWith("# "))                                   // Author's Comment
         color = "dodgerblue";
-      else if (line.startsWith("sl"))                                     // Syslog server
+      else if (line.startsWith("^^"))                                     // Syslog server
         color = "green";
       else if (line.contains(": [W] "))                                   // Console Warning
         color = "orange";
