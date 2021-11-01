@@ -72,6 +72,8 @@ public class PageData implements ReadOnlyPageData, Serializable {
 
   public static final String PATH_SEPARATOR = "PATH_SEPARATOR";
 
+  public static String dateStr = "";
+
   public PageData(PageData data, String content) {
     this(data);
     setContent(content);

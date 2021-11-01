@@ -18,9 +18,12 @@ public class PageVariableSource implements VariableSource {
       value = page.getName();
     else if (key.equals("RUNNING_PAGE_PATH"))
       value = page.getFullPath().parentPath().toString();
-	 else if (key.equals("RUNNING_PAGE_TAGS")) {
-		value = page.getData().getAttribute(PageData.PropertySUITES);
-	 }
+    else if (key.equals("RUNNING_PAGE_TAGS")) {
+      value = page.getData().getAttribute(PageData.PropertySUITES);
+    }
+    else if (key.equals("STARTED_AT")) {
+      value = page.getData().dateStr;
+    }
     else
       return Maybe.noString;
 

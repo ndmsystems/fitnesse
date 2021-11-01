@@ -27,6 +27,7 @@ import org.apache.velocity.VelocityContext;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,6 +50,9 @@ public class TestXmlFormatter extends BaseFormatter implements ExecutionLogListe
     totalTimeMeasurement = new TimeMeasurement().start();
     testResponse = new TestExecutionReport(context.version, page.getFullPath().toString());
     resetTimer();
+
+    SimpleDateFormat pageHistoryFormatter = new SimpleDateFormat(PageHistory.TEST_RESULT_FILE_DATE_PATTERN);
+    page.getData().dateStr = pageHistoryFormatter.format(new Date(totalTimeMeasurement.startedAt()));
   }
 
   public long startedAt() {
