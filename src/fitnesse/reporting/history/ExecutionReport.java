@@ -281,11 +281,14 @@ public abstract class ExecutionReport {
     public String getLineStyle(String line) {
       String color = "#333";                                              // Default foreground color
       String bgColor = "#f5f5f5";                                         // Default background color
+      String fontWeight = "normal";
 
       if (line.startsWith("| script |") ||                                // Test-runner Tool creation
-        line.startsWith("REUSE") || line.startsWith("CREATE")) {
+        line.startsWith("REUSE") || line.startsWith("CREATE"))
         color = "blue";
-      } else if (line.startsWith("# "))                                   // Author's Comment
+      else if (line.contains("RCI REQUEST:"))                             // RCI Request
+        fontWeight = "bolder";
+      else if (line.startsWith("# "))                                     // Author's Comment
         color = "dodgerblue";
       else if (line.startsWith("^^"))                                     // Syslog server
         color = "green";
@@ -302,7 +305,7 @@ public abstract class ExecutionReport {
         color = "darkcyan";
       }
 
-      return format("color: %s; background-color: %s;", color, bgColor);
+      return format("color: %s; background-color: %s; font-weight: %s", color, bgColor, fontWeight);
     }
 
     public void addStdErr(String output) {
