@@ -338,3 +338,12 @@ span.error {
     display: inline-block;
     padding: 0;
 }
+
+span.anchor::before {
+  display: block;
+  content: " ";
+  margin-top: -285px;
+  height: 285px;
+  visibility: hidden;
+  pointer-events: none;
+}

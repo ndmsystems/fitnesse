@@ -33,7 +33,11 @@
 <h4>Standard Output:</h4>
 <pre>
  #foreach( $line in $log.stdOutList )
-<span style="$log.getLineStyle($line)">#escape($line)</span>
+  #if( $log.getId($line) != '' )
+   <span id="$log.getId($line)" class="anchor" style="$log.getLineStyle($line)">#escape($line)</span>
+  #else
+   <span style="$log.getLineStyle($line)">#escape($line)</span>
+  #end
  #end
 </pre>
  #set( $stdErr = $log.stdErr)

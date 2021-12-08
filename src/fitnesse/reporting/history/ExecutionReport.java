@@ -278,6 +278,20 @@ public abstract class ExecutionReport {
       this.stdOutList.add(line);
     }
 
+    public String getId(String line) {
+      // Attach id to span only for critical errors
+      if (line.contains(": [C] ") || line.contains("Call Trace:"))
+      {
+        // MOXA ports begin from 40 always ^_^
+        int iend = line.indexOf(" 40");
+
+        if (iend != -1)
+          return line.substring(iend - 12 , iend);
+      }
+
+      return "";
+    }
+
     public String getLineStyle(String line) {
       String color = "#333";                                              // Default foreground color
       String bgColor = "#f5f5f5";                                         // Default background color
