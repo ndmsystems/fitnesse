@@ -279,17 +279,7 @@ public abstract class ExecutionReport {
     }
 
     public String getId(String line) {
-      // Attach id to span only for critical errors
-      if (line.contains(": [C] ") || line.contains("Call Trace:"))
-      {
-        // MOXA ports begin from 40 always ^_^
-        int iend = line.indexOf(" 40");
-
-        if (iend != -1)
-          return line.substring(iend - 12 , iend);
-      }
-
-      return "";
+      return line.replaceAll("[^a-zA-Z0-9]", "");
     }
 
     public String getLineStyle(String line) {
