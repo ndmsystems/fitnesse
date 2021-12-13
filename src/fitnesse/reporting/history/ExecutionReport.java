@@ -284,12 +284,14 @@ public abstract class ExecutionReport {
       // Cut timestamp and MOXA port, since we are interested in setting ids to elements only from DUT console
       String[] sentences = line.split("40\\d{2}: ");
       if (sentences.length > 1) {
-        // The first digit is the minimum length (the string will be left padded if it's shorter than 3).
-        // The second digit is the maximum length (the string will be truncated if it's longer than 50).
-        ret = format("%3.50s", sentences[1]);
+        ret = sentences[1];
 
         // Remove everything except letters and numbers
         ret = ret.replaceAll("[^a-zA-Z0-9]", "");
+
+        // The first digit is the minimum length (the string will be left padded if it's shorter than 3).
+        // The second digit is the maximum length (the string will be truncated if it's longer than 50).
+        ret = format("%3.50s", ret);
       }
 
       return ret;
