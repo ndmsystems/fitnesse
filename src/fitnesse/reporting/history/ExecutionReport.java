@@ -312,7 +312,7 @@ public abstract class ExecutionReport {
       else if (line.startsWith("^^"))                                     // Syslog server
         color = "green";
       else if (line.contains(": [W] "))                                   // Console Warning
-        color = "orange";
+        color = "darkorange";
       else if (line.contains(": [E] ") || line.contains("Bad Data CRC"))  // Console Error
         color = "red";
       else if (line.contains(": [C] ") || line.contains("Call Trace:")) { // Console Critical
