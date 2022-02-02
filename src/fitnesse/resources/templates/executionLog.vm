@@ -34,7 +34,7 @@
 <pre>
  #foreach( $line in $log.stdOutList )
   #if( $log.getId($line) != '' )
-   <span id="$log.getId($line)" class="anchor" style="$log.getLineStyle($line)">#escape($line)</span>
+   <span class="anchor" style="$log.getLineStyle($line)">#escape($line)<span id="$log.getId($line)" class="anchor-anchor"></span></span>
   #else
    <span style="$log.getLineStyle($line)">#escape($line)</span>
   #end
