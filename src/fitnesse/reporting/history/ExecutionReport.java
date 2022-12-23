@@ -313,13 +313,16 @@ public abstract class ExecutionReport {
         color = "green";
       else if (line.contains(": [W] "))                                   // Console Warning
         color = "darkorange";
-      else if (line.contains(": [E] ") || line.contains("Bad Data CRC"))  // Console Error
+      else if (line.contains(": [E] ") || line.contains("Bad Data CRC")   // Console Error
+        || line.contains("ACTION FAILED"))
         color = "red";
       else if (line.contains(": [C] ") || line.contains("Call Trace:")) { // Console Critical
         color = "white";
         bgColor = "red";
       } else if (line.startsWith(":: ") || line.contains(": [I] "))       // Console Info
         color = "gray";
+      else if (line.startsWith("isw "))                                   // ISW
+        color = "forestgreen";
       else if (line.startsWith("  ")) {                                   // Response from DUT
         color = "darkcyan";
       }
