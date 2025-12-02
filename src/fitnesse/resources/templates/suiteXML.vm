@@ -18,6 +18,9 @@
     #if($testResult.tags)
     <tags>#escape($testResult.tags)</tags>
     #end
+    #if($testResult.issue)
+    <issue>#escape($testResult.issue)</issue>
+    #end
     #if($includeHtml)
     <content>#escape($testResult.content)</content>
     #end

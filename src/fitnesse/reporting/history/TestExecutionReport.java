@@ -59,6 +59,7 @@ public class TestExecutionReport extends ExecutionReport {
     result.exceptions = XmlUtil.getTextValue(xmlResult, "exceptions");
     result.relativePageName = XmlUtil.getTextValue(xmlResult, "relativePageName");
     result.tags = XmlUtil.getTextValue(xmlResult, "tags");
+    result.issue = XmlUtil.getTextValue(xmlResult, "issue");
     result.dateString = XmlUtil.getTextValue(xmlResult, "date");
     result.runTimeInMillis = XmlUtil.getTextValue(xmlResult, "runTimeInMillis");
 
@@ -136,6 +137,7 @@ public class TestExecutionReport extends ExecutionReport {
     public String relativePageName;
     public List<InstructionResult> instructions = new ArrayList<>();
     public String tags;
+    public String issue;
     public String dateString;
     public long startTime;
     public String runTimeInMillis;
@@ -182,6 +184,14 @@ public class TestExecutionReport extends ExecutionReport {
 
     public void setTags(String tags) {
       this.tags = tags;
+    }
+
+    public String getIssue() {
+      return issue;
+    }
+
+    public void setIssue(String issue) {
+      this.issue = issue;
     }
 
     public TestSummary getTestSummary() {

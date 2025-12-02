@@ -47,6 +47,11 @@
     <label for="Suites">Tags:</label>
      <input type="text" id="Suites" title="Separate tags by a comma" name="Suites"#value( "Suites" ) size="70"/>
    </fieldset>
+
+   <fieldset>
+    <label for="Issue">Issue:</label>
+     <input type="text" id="Issue" title="Issue identifier or reference" name="Issue"#value( "Issue" ) size="70"/>
+   </fieldset>
   </div>
   <fieldset class="buttons">
    <input type="submit" name="Save" value="Save Properties" accesskey="s"/>

@@ -53,6 +53,7 @@ import static fitnesse.wiki.WikiPageProperty.SEARCH;
 import static fitnesse.wiki.WikiPageProperty.SECURE_READ;
 import static fitnesse.wiki.WikiPageProperty.SECURE_TEST;
 import static fitnesse.wiki.WikiPageProperty.SECURE_WRITE;
+import static fitnesse.wiki.WikiPageProperty.ISSUE;
 import static fitnesse.wiki.WikiPageProperty.SUITES;
 import static fitnesse.wiki.WikiPageProperty.VERSIONS;
 import static fitnesse.wiki.WikiPageProperty.WHERE_USED;
@@ -113,6 +114,9 @@ public class PropertiesResponder implements SecureResponder {
         }
       }
       jsonObject.put(SUITES, tags);
+    }
+    if (pageData.hasAttribute(ISSUE)) {
+      jsonObject.put(ISSUE, pageData.getAttribute(ISSUE));
     }
     return jsonObject;
   }

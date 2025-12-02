@@ -17,6 +17,9 @@
     #if($result.Tags)
     <tags>#escape($result.Tags)</tags>
     #end
+    #if($result.Issue)
+    <issue>#escape($result.Issue)</issue>
+    #end
     #if($result.Instructions.size() > 0)
     <instructions>
       #foreach($instructionResult in $result.Instructions)

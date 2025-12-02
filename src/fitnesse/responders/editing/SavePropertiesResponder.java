@@ -54,6 +54,9 @@ public class SavePropertiesResponder extends BasicResponder {
 
     String helpText = request.getInput("HelpText");
     data.setOrRemoveAttribute(PageData.PropertyHELP, helpText);
+
+    String issue = request.getInput("Issue");
+    data.setOrRemoveAttribute(WikiPageProperty.ISSUE, issue);
   }
 
   private void setPageTypeAttribute(Request request, PageData data) {
