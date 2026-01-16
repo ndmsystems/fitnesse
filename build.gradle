@@ -1,5 +1,7 @@
-import com.amazonaws.auth.*
-import com.amazonaws.auth.profile.*
+import com.amazonaws.auth.AWSCredentials
+import com.amazonaws.auth.AWSCredentialsProvider
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain
+import com.amazonaws.auth.profile.ProfileCredentialsProvider
 
 buildscript {
 
@@ -238,12 +240,24 @@ clean {
 }
 
 def fetchAwsCredentials = {
-    try {
-        return new ProfileCredentialsProvider().credentials
-    } catch (Exception e) {
-        logger.debug('Unable to retrieve AWS credentials from profile, publishing to S3 is not available.', e)
-        return null
+    List<AWSCredentialsProvider> providers = [
+        new DefaultAWSCredentialsProviderChain(),  // env vars, IAM role, etc.
+        new ProfileCredentialsProvider()           // fallback for dev machines
+    ]
+
+    for (p in providers) {
+        try {
+            AWSCredentials c = p.credentials
+            if (c?.AWSAccessKeyId && c?.AWSSecretKey) {
+              return c
+            }
+        } catch (Exception ignored) {
+            // continue
+        }
     }
+
+    println 'Unable to fetch AWS Credentials: publishing to s3 is disabled.'
+    return null
 }
 AWSCredentials awsCredentials = fetchAwsCredentials()
 
