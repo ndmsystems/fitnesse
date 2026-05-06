@@ -51,11 +51,11 @@ configurations {
     lesscss
     optional
     compile {
-        transitive = false
+//        transitive = false
         extendsFrom optional
     }
     runtime {
-        transitive = false
+//        transitive = false
     }
 }
 
@@ -74,14 +74,13 @@ targetCompatibility = '11'
 //targetCompatibility = '1.8'
 
 dependencies {
-  compile "org.apache.httpcomponents:httpclient:4.5.2"
-  compile "org.apache.httpcomponents:httpcore:4.4.4"
-  compile "org.htmlparser:htmlparser:2.1"
+  compile ("org.htmlparser:htmlparser:2.1")
   compile "org.htmlparser:htmllexer:2.1"
   compile ("org.apache.velocity:velocity-engine-core:2.2") {
     exclude group:"org.apache.commons", module: "commons-lang3"
     exclude group: 'org.slf4j', module: 'slf4j-api'
   }
+
   compile "org.apache.commons:commons-lang3:3.9"
   compile "org.slf4j:slf4j-api:1.7.25"
   compile "org.slf4j:slf4j-jdk14:1.7.25"
