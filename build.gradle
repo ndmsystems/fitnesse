@@ -4,7 +4,6 @@ import com.amazonaws.auth.DefaultAWSCredentialsProviderChain
 import com.amazonaws.auth.profile.ProfileCredentialsProvider
 
 buildscript {
-
     repositories {
         mavenCentral()
     }
@@ -22,18 +21,20 @@ plugins {
 
 apply plugin: "info.solidsoft.pitest"
 
-tasks.register('incrementVersion') {
-  doFirst {
+version = "${majorVersion}.${minorVersion}"
+
+task incrementVersion {
+  doLast {
     def pFile = file('gradle.properties')
     Properties vProps = new Properties()
 
-    vProps.load(new FileInputStream(pFile))
-    def mv = vProps['minorVersion'].toInteger() + 1
-    vProps['minorVersion'] = mv.toString()
-    vProps.store(pFile.newWriter(), null)
-  }
+    pFile.withInputStream { vProps.load(it) }
+    def nextMinor = vProps['minorVersion'].toInteger() + 1
+    vProps['minorVersion'] = nextMinor.toString()
+    pFile.withWriter { vProps.store(it, null) }
 
-  version = "$majorVersion.$minorVersion"
+    println "Version incremented to: ${majorVersion}.${nextMinor} (run again to apply in manifest)"
+  }
 }
 
 println "Building FitNesse v${project.version}..."
@@ -170,7 +171,7 @@ jar {
   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
   manifest {
     attributes("Main-Class": "fitnesseMain.FitNesseMain",
-        "Implementation-Version": version)
+        "Implementation-Version": project.version)
     }
 }
 
