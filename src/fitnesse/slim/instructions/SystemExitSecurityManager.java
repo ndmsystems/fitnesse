@@ -199,6 +199,15 @@ public class SystemExitSecurityManager extends SecurityManager {
     }
   }
 
+//  @Override
+//  public boolean checkTopLevelWindow(Object window) {
+//    if (delegate != null) {
+//      return delegate.checkTopLevelWindow(window);
+//    } else {
+//      return false;
+//    }
+//  }
+
   @Override
   public void checkPrintJobAccess() {
 
@@ -206,6 +215,22 @@ public class SystemExitSecurityManager extends SecurityManager {
       delegate.checkPrintJobAccess();
     }
   }
+
+//  @Override
+//  public void checkSystemClipboardAccess() {
+//
+//    if (delegate != null) {
+//      delegate.checkSystemClipboardAccess();
+//    }
+//  }
+
+//  @Override
+//  public void checkAwtEventQueueAccess() {
+//
+//    if (delegate != null) {
+//      delegate.checkAwtEventQueueAccess();
+//    }
+//  }
 
   @Override
   public void checkPackageAccess(String pkg) {
@@ -229,6 +254,14 @@ public class SystemExitSecurityManager extends SecurityManager {
       delegate.checkSetFactory();
     }
   }
+
+//  @Override
+//  public void checkMemberAccess(Class<?> clazz, int which) {
+//
+//    if (delegate != null) {
+//      delegate.checkMemberAccess(clazz, which);
+//    }
+//  }
 
   @Override
   public void checkSecurityAccess(String target) {
