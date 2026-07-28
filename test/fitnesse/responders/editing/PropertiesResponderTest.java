@@ -15,10 +15,15 @@ import fitnesse.wiki.WikiImportProperty;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageProperty;
 import fitnesse.wiki.WikiPageUtil;
+import fitnesse.wiki.fs.FileSystemPageFactory;
+import fitnesse.wiki.fs.MemoryFileSystem;
+import fitnesse.wiki.fs.SimpleFileVersionsController;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.File;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -377,6 +382,48 @@ public class PropertiesResponderTest {
     assertSubString("<input type=\"checkbox\" id=\"Files\" name=\"Files\" checked=\"checked\"/>", html);
     assertSubString("<input type=\"checkbox\" id=\"RecentChanges\" name=\"RecentChanges\" checked=\"checked\"/>", html);
     assertSubString("<input type=\"checkbox\" id=\"Search\" name=\"Search\" checked=\"checked\"/>", html);
+  }
+
+  @Test
+  public void testWikiFileDefaultBooleanPropertiesAreCheckedWhenAbsentFromFrontMatter() throws Exception {
+    makeFileBackedContextWithWikiPage("---\n" +
+      "Help: help text\n" +
+      "Test\n" +
+      "---\n" +
+      "page content");
+
+    SimpleResponse response = (SimpleResponse) new PropertiesResponder().makeResponse(context, request);
+    String html = response.getContent();
+
+    for (String attribute : new String[]{"Edit", "Versions", "Properties", "Refactor", "WhereUsed", "Files", "RecentChanges", "Search"})
+      assertCheckboxChecked(attribute, html);
+  }
+
+  @Test
+  public void testWikiFileExplicitFalseBooleanPropertiesAreNotChecked() throws Exception {
+    makeFileBackedContextWithWikiPage("---\n" +
+      "Edit: no\n" +
+      "Files: no\n" +
+      "Test\n" +
+      "---\n" +
+      "page content");
+
+    SimpleResponse response = (SimpleResponse) new PropertiesResponder().makeResponse(context, request);
+    String html = response.getContent();
+
+    assertCheckboxNotChecked(html, "Edit");
+    assertCheckboxNotChecked(html, "Files");
+    assertCheckboxChecked("Versions", html);
+    assertCheckboxChecked("Properties", html);
+  }
+
+  private void makeFileBackedContextWithWikiPage(String content) throws Exception {
+    MemoryFileSystem fileSystem = new MemoryFileSystem();
+    fileSystem.makeFile(new File("RooT", "SomePage.wiki"), content);
+    context = FitNesseUtil.makeTestContext(new FileSystemPageFactory(fileSystem, new SimpleFileVersionsController(fileSystem)), "RooT", "RooT", 0);
+    root = context.getRootPage();
+    request = new MockRequest();
+    request.setResource("SomePage");
   }
 
   @Test

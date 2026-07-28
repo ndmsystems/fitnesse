@@ -30,8 +30,11 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Set;
 
 import static fitnesse.wiki.PageData.ACTION_ATTRIBUTES;
@@ -256,14 +259,27 @@ public class PropertiesResponder implements SecureResponder {
 
   public void makeTestActionCheckboxesHtml() {
     html.put("actionTypes", ACTION_ATTRIBUTES);
+    html.put("checkedActionTypes", checkedAttributes(ACTION_ATTRIBUTES));
   }
 
   public void makeNavigationCheckboxesHtml() {
     html.put("navigationTypes", NAVIGATION_ATTRIBUTES);
+    html.put("checkedNavigationTypes", checkedAttributes(NAVIGATION_ATTRIBUTES));
   }
 
   public void makeSecurityCheckboxesHtml() {
     html.put("securityTypes", SECURITY_ATTRIBUTES);
+    html.put("checkedSecurityTypes", checkedAttributes(SECURITY_ATTRIBUTES));
+  }
+
+  private Set<String> checkedAttributes(String[] attributes) {
+    Set<String> checkedAttributes = new HashSet<>();
+    for (String attribute : Arrays.asList(attributes)) {
+      if (pageData.hasAttribute(attribute)) {
+        checkedAttributes.add(attribute);
+      }
+    }
+    return checkedAttributes;
   }
 
 

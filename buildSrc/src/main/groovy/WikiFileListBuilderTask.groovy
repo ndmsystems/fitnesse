@@ -1,5 +1,6 @@
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.SourceSet;
@@ -45,6 +46,7 @@ public class WikiFileListBuilderTask extends DefaultTask {
     this.updateDoNotCopyOverListFile = new File(outputDirectory, "updateDoNotCopyOverList")
   }
 
+  @Internal
   public List<String> getWikiFiles() {
     if (wikiFiles == null) wikiFiles = filesClosure()
     wikiFiles

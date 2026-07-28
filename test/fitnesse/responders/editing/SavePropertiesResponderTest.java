@@ -36,6 +36,7 @@ public class SavePropertiesResponderTest {
     page = WikiPageUtil.addPage(root, PathParser.parse(PAGE_NAME), "");
 
     request = new MockRequest();
+    request.addInput(SavePropertiesResponder.FULL_PROPERTIES_UPDATE, "true");
     request.addInput("PageType", "Test");
     request.addInput("Properties", "on");
     request.addInput("Search", "on");
@@ -79,6 +80,49 @@ public class SavePropertiesResponderTest {
     PageData data = page.getData();
     assertFalse("should not have help attribute", data.hasAttribute(WikiPageProperty.HELP));
     assertFalse("should not have suites attribute", data.hasAttribute(WikiPageProperty.SUITES));
+  }
+
+  @Test
+  public void testPartialIssueUpdateKeepsExistingBooleanAttributes() throws Exception {
+    page = WikiPageUtil.addPage(root, PathParser.parse(PAGE_NAME), "");
+    PageData data = page.getData();
+    data.setAttribute(WikiPageProperty.ISSUE, "FIT-123");
+    page.commit(data);
+
+    request = new MockRequest();
+    request.setResource(PAGE_NAME);
+    request.addInput("Issue", "");
+
+    responder.makeResponse(context, request);
+
+    PageData updatedData = page.getData();
+    assertFalse(updatedData.hasAttribute(WikiPageProperty.ISSUE));
+    assertTrue(updatedData.hasAttribute(WikiPageProperty.EDIT));
+    assertTrue(updatedData.hasAttribute(WikiPageProperty.PROPERTIES));
+    assertTrue(updatedData.hasAttribute(WikiPageProperty.REFACTOR));
+  }
+
+  @Test
+  public void testPartialIssueUpdateWithPageTypeKeepsExistingBooleanAttributes() throws Exception {
+    page = WikiPageUtil.addPage(root, PathParser.parse(PAGE_NAME), "");
+    PageData data = page.getData();
+    data.setAttribute(WikiPageProperty.ISSUE, "FIT-123");
+    data.setAttribute("Test");
+    page.commit(data);
+
+    request = new MockRequest();
+    request.setResource(PAGE_NAME);
+    request.addInput("PageType", "Test");
+    request.addInput("Issue", "");
+
+    responder.makeResponse(context, request);
+
+    PageData updatedData = page.getData();
+    assertFalse(updatedData.hasAttribute(WikiPageProperty.ISSUE));
+    assertTrue(updatedData.hasAttribute("Test"));
+    assertTrue(updatedData.hasAttribute(WikiPageProperty.EDIT));
+    assertTrue(updatedData.hasAttribute(WikiPageProperty.PROPERTIES));
+    assertTrue(updatedData.hasAttribute(WikiPageProperty.REFACTOR));
   }
 
   @Test

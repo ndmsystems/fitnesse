@@ -17,6 +17,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SavePropertiesResponder extends BasicResponder {
+  static final String FULL_PROPERTIES_UPDATE = "FullPropertiesUpdate";
+
   @Override
   public Response makeResponse(FitNesseContext context, Request request) throws Exception {
     WikiPage page = getPage(context, request);
@@ -35,18 +37,20 @@ public class SavePropertiesResponder extends BasicResponder {
   }
 
   private void saveAttributes(Request request, PageData data) {
-    setPageTypeAttribute(request, data);
+    if (isFullPropertiesUpdate(request)) {
+      setPageTypeAttribute(request, data);
 
-    List<String> attrs = new LinkedList<>();
-    attrs.addAll(Arrays.asList(PageData.NON_SECURITY_ATTRIBUTES));
-    attrs.addAll(Arrays.asList(PageData.SECURITY_ATTRIBUTES));
-    attrs.add(PageData.PropertyPRUNE);
+      List<String> attrs = new LinkedList<>();
+      attrs.addAll(Arrays.asList(PageData.NON_SECURITY_ATTRIBUTES));
+      attrs.addAll(Arrays.asList(PageData.SECURITY_ATTRIBUTES));
+      attrs.add(PageData.PropertyPRUNE);
 
-    for (String attribute : attrs) {
-      if (isChecked(request, attribute))
-        data.setAttribute(attribute);
-      else
-        data.removeAttribute(attribute);
+      for (String attribute : attrs) {
+        if (isChecked(request, attribute))
+          data.setAttribute(attribute);
+        else
+          data.removeAttribute(attribute);
+      }
     }
 
     String suites = request.getInput("Suites");
@@ -57,6 +61,10 @@ public class SavePropertiesResponder extends BasicResponder {
 
     String issue = request.getInput("Issue");
     data.setOrRemoveAttribute(WikiPageProperty.ISSUE, issue);
+  }
+
+  private boolean isFullPropertiesUpdate(Request request) {
+    return request.hasInput(FULL_PROPERTIES_UPDATE);
   }
 
   private void setPageTypeAttribute(Request request, PageData data) {

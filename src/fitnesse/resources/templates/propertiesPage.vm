@@ -1,8 +1,9 @@
-#macro( checked $attr )#if( $pageData.hasAttribute($attr) ) checked="checked"#end#end
+#macro( checked $checkedAttrs $attr )#if( $checkedAttrs.contains($attr) ) checked="checked"#end#end
 #macro( value $prop ) value="#escape($!{pageData.getAttribute( $prop )})"#end
  <p>$lastModified</p>
  <form method="post">
   <input type="hidden" name="responder" value="saveProperties"/>
+  <input type="hidden" name="FullPropertiesUpdate" value="true"/>
 
   <h2>Page properties</h2>
   <div class="properties">
@@ -12,27 +13,27 @@
     <label for="$pageType"><input type="radio" id="$pageType" name="PageType" value="$pageType"#if( $pageType == $selectedPageType) checked="checked"#end/>$pageType</label>
     #end
 
-    <label for="Prune"><input type="checkbox" id="Prune" name="Prune"#checked( "Prune" )/>Skip (Recursive)</label>
+    <label for="Prune"><input type="checkbox" id="Prune" name="Prune"#if( $pageData.hasAttribute("Prune") ) checked="checked"#end/>Skip (Recursive)</label>
    </fieldset>
 
    <fieldset>
     <legend>Actions:</legend>
     #foreach( $action in $actionTypes )
-    <label for="$action"><input type="checkbox" id="$action" name="$action"#checked( $action )/>$action</label>
+    <label for="$action"><input type="checkbox" id="$action" name="$action"#checked( $checkedActionTypes $action )/>$action</label>
     #end
    </fieldset>
 
    <fieldset>
     <legend>Navigation:</legend>
     #foreach( $navigation in $navigationTypes )
-    <label for="$navigation"><input type="checkbox" id="$navigation" name="$navigation"#checked( $navigation )/>$navigation</label>
+    <label for="$navigation"><input type="checkbox" id="$navigation" name="$navigation"#checked( $checkedNavigationTypes $navigation )/>$navigation</label>
     #end
    </fieldset>
 
    <fieldset>
     <legend>Security:</legend>
     #foreach( $security in $securityTypes )
-	<label for="$security"><input type="checkbox" id="$security" name="$security"#checked( $security )/>$security</label>
+  	<label for="$security"><input type="checkbox" id="$security" name="$security"#checked( $checkedSecurityTypes $security )/>$security</label>
     #end
    </fieldset>
   </div>
