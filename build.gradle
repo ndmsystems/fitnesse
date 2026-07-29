@@ -17,6 +17,7 @@ plugins {
   id 'java'
   id "maven-publish"
   id "com.github.ben-manes.versions" version "0.27.0"
+  id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
 apply plugin: "info.solidsoft.pitest"
@@ -78,8 +79,8 @@ sourceSets {
     }
 }
 
-sourceCompatibility = '11'
-targetCompatibility = '11'
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 //sourceCompatibility = '1.8'
 //targetCompatibility = '1.8'
 
@@ -169,7 +170,7 @@ pitest {
 task run(type: JavaExec) {
     dependsOn classes, copyRuntimeLibs
     classpath = sourceSets.main.runtimeClasspath
-    main "fitnesseMain.FitNesseMain"
+  mainClass = "fitnesseMain.FitNesseMain"
     args "-p", "8001", "-e", "0"
 }
 
@@ -189,31 +190,34 @@ jar {
 }
 
 
-task standaloneJar(type: Jar) {
-  dependsOn jar
-  archiveBaseName = 'fitnesse'
-  archiveClassifier = 'standalone'
-  from {
-    configurations.runtimeClasspath.collect { zipTree(it) }
-  } {
-    exclude 'META-INF/**'
+shadowJar {
+  dependsOn classes, createUpdateLists
+  archiveBaseName.set('fitnesse')
+  archiveClassifier.set('standalone')
+  archiveVersion.set('')
+  destinationDirectory.set(file("${rootProject.fitDir}"))
+  configurations = [project.configurations.runtimeClasspath]
+  from sourceSets.main.output
+  into('Resources') {
+    from('.') {
+      include createUpdateLists.wikiFiles as String[]
+    }
   }
-  from jar.outputs.files.collect {
-    zipTree(it)
-  }
+  exclude 'META-INF/**'
   manifest {
     attributes("Main-Class": "fitnesseMain.FitNesseMain",
         "Implementation-Version": version)
   }
+}
 
-  archiveVersion = ''
-  destinationDir = file("${rootProject.fitDir}")
+tasks.register('standaloneJar') {
+  dependsOn shadowJar
 }
 
 task slimJar(type: Jar) {
   dependsOn jar
-  archiveBaseName = 'fitnesse'
-  archiveClassifier = 'slim'
+  archiveBaseName.set('fitnesse')
+  archiveClassifier.set('slim')
   from { jar.outputs.files.collect { zipTree(it) } }
     {
     include 'fitnesse/html/*.class'
@@ -231,20 +235,20 @@ task acceptanceTest(type: JavaExec) {
   mustRunAfter test
   onlyIf { test.didWork }
   classpath = standaloneJar.outputs.files
-  main "fitnesseMain.FitNesseMain"
+  mainClass = "fitnesseMain.FitNesseMain"
   args "-o", "-c", "FitNesse.SuiteAcceptanceTests?suite&format=text"
 }
 
 
 task javadocJar(type: Jar) {
   mustRunAfter check
-  archiveClassifier = 'javadoc'
+  archiveClassifier.set('javadoc')
   from javadoc
 }
 
 task sourcesJar(type: Jar) {
   mustRunAfter check
-  archiveClassifier = 'sources'
+  archiveClassifier.set('sources')
   from sourceSets.main.allSource
 }
 
@@ -278,7 +282,7 @@ AWSCredentials awsCredentials = fetchAwsCredentials()
 publishing {
     publications {
         FitNesseRelease(MavenPublication) {
-            artifact standaloneJar
+      artifact shadowJar
             groupId 'com.ndm'
             artifactId 'fitnesse'
         }
@@ -301,8 +305,8 @@ publishing {
 publish.dependsOn incrementVersion
 
 // We cant' define wrapper version for subprojects
-if (rootProject == 'fitnesse') {
+if (project == rootProject) {
   wrapper {
-    gradleVersion = '5.3.1'
+    gradleVersion = '7.6'
   }
 }

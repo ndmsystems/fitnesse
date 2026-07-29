@@ -84,7 +84,7 @@ public class WikiFileListBuilder {
 
   public File createDoNotUpdateList() {
     if (updateDoNotCopyOverContent.equals(""))
-      for (String dirName : mainDirectories)
+      for (String dirName : files)
         addFilePathsToList(dirName);
 
     updateDoNotCopyOverListFile.parentFile.mkdirs()

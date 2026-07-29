@@ -23,12 +23,13 @@ class LessCompiler extends DefaultTask {
   public void exec() {
     inputDir.mkdirs()
     def taskClasspath = classpath
+    def rhinoMainClass = "org.mozilla.javascript.tools.shell.Main"
     cssFile.withOutputStream { output ->
-      project.javaexec {
-        classpath(taskClasspath)
-        mainClass = "org.mozilla.javascript.tools.shell.Main"
-        args "extra/lesscss/less-rhino-1.7.0.js", new File(inputDir, mainLessFile)
-        standardOutput = output
+      project.javaexec { spec ->
+        spec.classpath(taskClasspath)
+        spec.mainClass.set(rhinoMainClass)
+        spec.args "extra/lesscss/less-rhino-1.7.0.js", new File(inputDir, mainLessFile)
+        spec.standardOutput = output
       }
     }
   }
